@@ -32,4 +32,13 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="Load Picture" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Upload Drive"
+        android:id="@+id/btn_UploadDrive"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonLoadPicture"
+        tools:layout_editor_absoluteY="0dp"></Button>
 </androidx.constraintlayout.widget.ConstraintLayout>
