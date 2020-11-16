@@ -11,9 +11,11 @@ import android.net.wifi.hotspot2.pps.Credential;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -34,6 +36,7 @@ import com.google.api.services.drive.Drive;
 
 import java.security.Provider;
 import java.sql.Driver;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     ImageButton btnCamera;
     int REQUEST_CODE=123;
+    ListView lvThumbnail;
+    ArrayList<Thumbnail> arrayThumb;
 
     ImageView imageView;
     Button button;
@@ -56,6 +61,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //load cac thumbnail cua hinh da chup o home
+        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
+        arrayThumb = new ArrayList<Thumbnail>();
+
+        arrayThumb.add(new Thumbnail(R.drawable.boy,"Doc1", "01/01/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.boy_2,"Doc2", "01/02/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.woman_2,"Doc3", "01/03/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.boy,"Doc4", "01/04/2020"));
+
+        ThumbnailAdapter TNAdapter = new ThumbnailAdapter(
+                MainActivity.this,
+                R.layout.row_thumbnail,
+                arrayThumb
+        );
+
+        lvThumbnail.setAdapter(TNAdapter);
 //        Màn hình chụp ảnh
         btnCamera=(ImageButton)findViewById(R.id.btn_Camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
