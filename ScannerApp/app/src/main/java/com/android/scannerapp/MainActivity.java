@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.wifi.hotspot2.pps.Credential;
 import android.os.Bundle;
@@ -45,14 +46,14 @@ import java.util.prefs.Preferences;
 public class MainActivity extends AppCompatActivity {
 
     ImageButton btnCamera;
-    int REQUEST_CODE=123;
+    int REQUEST_CODE = 123;
     ListView lvThumbnail;
     ArrayList<Thumbnail> arrayThumb;
 
-    ImageView imageView;
-    Button button;
+    ImageView imgView;
+    Button btnLoadImage;
     private static final int PICK_IMAGE = 1;
-    Uri imageUri;
+    Uri imgUri;
 
     Button btnDrive;
     DriveServiceHelper driveServiceHelper;
@@ -61,14 +62,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //load cac thumbnail cua hinh da chup o home
         lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
         arrayThumb = new ArrayList<Thumbnail>();
 
-        arrayThumb.add(new Thumbnail(R.drawable.boy,"Doc1", "01/01/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.boy_2,"Doc2", "01/02/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.woman_2,"Doc3", "01/03/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.boy,"Doc4", "01/04/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc1", "01/01/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.boy_2, "Doc2", "01/02/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.woman_2, "Doc3", "01/03/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc4", "01/04/2020"));
 
         ThumbnailAdapter TNAdapter = new ThumbnailAdapter(
                 MainActivity.this,
@@ -78,19 +80,19 @@ public class MainActivity extends AppCompatActivity {
 
         lvThumbnail.setAdapter(TNAdapter);
 //        Màn hình chụp ảnh
-        btnCamera=(ImageButton)findViewById(R.id.btn_Camera);
+        btnCamera = (ImageButton) findViewById(R.id.btn_Camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent,REQUEST_CODE);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
 
         // load image from gallery
-        imageView = (ImageView) findViewById(R.id.imageView);
-        button = (Button) findViewById(R.id.buttonLoadPicture);
-        button.setOnClickListener(new View.OnClickListener() {
+        imgView = (ImageView) findViewById(R.id.imageView);
+        btnLoadImage = (Button) findViewById(R.id.btnLoadImage);
+        btnLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openGallery();
@@ -107,25 +109,48 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    // open gallery
+
+    //     open gallery
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
-            imageUri = data.getData();
-            imageView.setImageURI(imageUri);
+
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+
+
+                // Get uri
+                imgUri = data.getData();
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
+                int nh = (int) (bitmap.getHeight() * (1024.0 / bitmap.getWidth()));
+                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 1024, nh, true);
+                // Set image
+                imgView.setImageBitmap(scaled);
+
+                openLoadImageForm.putExtra("imageUri", imgUri.toString());
+                startActivity(openLoadImageForm);
+
+            } else {
+                Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Fail", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
+
         //drive
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case 400:
-                if(resultCode == RESULT_OK)
-                {
+                if (resultCode == RESULT_OK) {
                     handleSignInIntent(data);
                 }
         }
@@ -167,25 +192,24 @@ public class MainActivity extends AppCompatActivity {
                 .requestScopes(new Scope(Scopes.DRIVE_FILE))
                 .build();
         GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
-        startActivityForResult(client.getSignInIntent(),400);
+        startActivityForResult(client.getSignInIntent(), 400);
 
     }
 
 
-    public void uploadPdfFile(View v)
-    {
+    public void uploadPdfFile(View v) {
         String filePath = "/storage/emulated/0/mypdf.pdf";
 
         driveServiceHelper.createFilePDF(filePath).addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
             public void onSuccess(String s) {
-                Toast.makeText(getApplicationContext(),"upload successfully",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "upload successfully", Toast.LENGTH_LONG).show();
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(),"check your google drive api key",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "check your google drive api key", Toast.LENGTH_LONG).show();
                     }
                 });
 

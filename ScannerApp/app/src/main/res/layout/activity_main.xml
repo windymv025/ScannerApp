@@ -26,12 +26,12 @@
 
 
     <Button
-        android:id="@+id/buttonLoadPicture"
+        android:id="@+id/btnLoadImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:text="Load Picture" />
+        android:text="Load Image" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
