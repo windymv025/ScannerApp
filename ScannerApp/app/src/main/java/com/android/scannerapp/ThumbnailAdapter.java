@@ -1,6 +1,7 @@
 package com.android.scannerapp;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,52 +9,55 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class ThumbnailAdapter extends BaseAdapter {
+public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.ViewHolder> {
+    ArrayList<Thumbnail> thumbnails;
+    Context context;
 
-    Context myContext;
-    int myLayout;
-    List<Thumbnail> arrayThumbnail;
+    public ThumbnailAdapter(ArrayList<Thumbnail> thumbnails, Context context) {
+        this.thumbnails = thumbnails;
+        this.context = context;
+    }
 
-    public ThumbnailAdapter(Context context, int layout, List<Thumbnail> thumbnailList){
-        myContext = context;
-        myLayout = layout;
-        arrayThumbnail = thumbnailList;
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View itemView = layoutInflater.inflate(R.layout.row_thumbnail, parent,false);
+
+
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public int getCount() {
-        return arrayThumbnail.size();
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.txtName.setText(thumbnails.get(position).getName());
+        holder.txtDate.setText(thumbnails.get(position).getDay_create());
+        holder.imgThumb.setImageResource(thumbnails.get(position).getImage());
     }
 
     @Override
-    public Object getItem(int position) {
-        return null;
+    public int getItemCount() {
+        return thumbnails.size();
     }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        TextView txtName;
+        TextView txtDate;
+        ImageView imgThumb;
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater = (LayoutInflater) myContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        convertView = inflater.inflate(myLayout, null);
-
-        //Anh xa va gan gia tri
-
-        TextView txtName = (TextView) convertView.findViewById(R.id.txtName);
-        txtName.setText(arrayThumbnail.get(position).name);
-
-        TextView txtDate = (TextView) convertView.findViewById(R.id.txtDateCreate);
-        txtDate.setText(arrayThumbnail.get(position).day_create);
-
-        ImageView imgThumb = (ImageView) convertView.findViewById(R.id.imgThumb);
-        imgThumb.setImageResource(arrayThumbnail.get(position).Image);
-        return convertView;
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtName = (TextView)itemView.findViewById(R.id.txtName);
+            txtDate = itemView.findViewById(R.id.txtDateCreate);
+            imgThumb = itemView.findViewById(R.id.imgThumb);
+        }
     }
 }

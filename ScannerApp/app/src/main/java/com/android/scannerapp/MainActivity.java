@@ -2,10 +2,13 @@ package com.android.scannerapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.wifi.hotspot2.pps.Credential;
@@ -16,7 +19,9 @@ import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -62,15 +67,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //load cac thumbnail cua hinh da chup o home
+        initView();
+        /*//load cac thumbnail cua hinh da chup o home
         lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
         arrayThumb = new ArrayList<Thumbnail>();
 
-        arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc1", "01/01/2020"));
+
+        *//*arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc1", "01/01/2020"));
         arrayThumb.add(new Thumbnail(R.drawable.boy_2, "Doc2", "01/02/2020"));
         arrayThumb.add(new Thumbnail(R.drawable.woman_2, "Doc3", "01/03/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc4", "01/04/2020"));
+        arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc4", "01/04/2020"));*//*
 
         ThumbnailAdapter TNAdapter = new ThumbnailAdapter(
                 MainActivity.this,
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 arrayThumb
         );
 
-        lvThumbnail.setAdapter(TNAdapter);
+        lvThumbnail.setAdapter(TNAdapter);*/
 //        Màn hình chụp ảnh
         btnCamera = (ImageButton) findViewById(R.id.btn_Camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +115,46 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    public void initView(){
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.rvThumbnail);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        ArrayList<Thumbnail> arrayList = new ArrayList<>();
+        arrayList.add(new Thumbnail(R.drawable.boy, "Doc1", "00/00/00"));
+        arrayList.add(new Thumbnail(R.drawable.boy_2, "Doc2", "00/00/00"));
+        arrayList.add(new Thumbnail(R.drawable.woman, "Doc3", "00/00/00"));
+        arrayList.add(new Thumbnail(R.drawable.woman_2, "Doc4", "00/00/00"));
+        ThumbnailAdapter thumbnailAdapter = new ThumbnailAdapter(arrayList, getApplicationContext());
+        recyclerView.setAdapter(thumbnailAdapter);
+    }
+
+  /*  private ArrayList<String> getAllShownImagesPath(Activity activity) {
+        Uri uri;
+        Cursor cursor;
+        int column_index_data, column_index_folder_name;
+        ArrayList<String> listOfAllImages = new ArrayList<String>();
+        String absolutePathOfImage = null;
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        String[] projection = { MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+
+        cursor = activity.getContentResolver().query(uri, projection, null,
+                null, null);
+
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+        while (cursor.moveToNext()) {
+            absolutePathOfImage = cursor.getString(column_index_data);
+
+            listOfAllImages.add(absolutePathOfImage);
+        }
+        return listOfAllImages;
+    }*/
 
     //     open gallery
     private void openGallery() {
