@@ -46,6 +46,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.6.0'
+
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation ('com.google.apis:google-api-services-drive:v3-rev136-1.25.0')
             {

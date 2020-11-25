@@ -39,6 +39,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.security.Provider;
 import java.sql.Driver;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent intent = CropImage.activity(imgUri).getIntent(getApplicationContext());
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         // load image from gallery
         imgView = (ImageView) findViewById(R.id.imageView);
         btnLoadImage = (Button) findViewById(R.id.btnLoadImage);
+        btnLoadImage.setVisibility(View.INVISIBLE);
         btnLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,24 +171,24 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
-                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && null != data) {
+                    Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
 
+                    // Get uri
+                    imgUri = result.getUri();
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
+//                    int nh = (int) (bitmap.getHeight() * (1024.0 / bitmap.getWidth()));
+//                    Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 1024, nh, true);
+                    // Set image
+                    imgView.setImageURI(imgUri);
 
-                // Get uri
-                imgUri = data.getData();
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
-                int nh = (int) (bitmap.getHeight() * (1024.0 / bitmap.getWidth()));
-                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 1024, nh, true);
-                // Set image
-                imgView.setImageBitmap(scaled);
+                    openLoadImageForm.putExtra("imageUri", imgUri.toString());
+                    startActivity(openLoadImageForm);
+                }else {
+                    Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
+                }
 
-                openLoadImageForm.putExtra("imageUri", imgUri.toString());
-                startActivity(openLoadImageForm);
-
-            } else {
-                Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
-            }
 
         } catch (Exception e) {
             Toast.makeText(this, "Fail", Toast.LENGTH_LONG).show();
