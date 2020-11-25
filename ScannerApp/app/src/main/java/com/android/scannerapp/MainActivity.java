@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         // load image from gallery
         imgView = (ImageView) findViewById(R.id.imageView);
         btnLoadImage = (Button) findViewById(R.id.btnLoadImage);
+        btnLoadImage.setVisibility(View.INVISIBLE);
         btnLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
