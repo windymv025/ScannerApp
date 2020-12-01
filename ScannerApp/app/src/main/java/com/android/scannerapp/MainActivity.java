@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     ListView lvThumbnail;
     ArrayList<Thumbnail> arrayThumb;
 
-    ImageView imgView;
     Button btnLoadImage;
     private static final int PICK_IMAGE = 1;
     Uri imgUri;
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // load image from gallery
-        imgView = (ImageView) findViewById(R.id.imageView);
         btnLoadImage = (Button) findViewById(R.id.btnLoadImage);
         btnLoadImage.setVisibility(View.INVISIBLE);
         btnLoadImage.setOnClickListener(new View.OnClickListener() {
@@ -181,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
 //                    int nh = (int) (bitmap.getHeight() * (1024.0 / bitmap.getWidth()));
 //                    Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 1024, nh, true);
                     // Set image
-                    imgView.setImageURI(imgUri);
 
                     openLoadImageForm.putExtra("imageUri", imgUri.toString());
                     startActivity(openLoadImageForm);
