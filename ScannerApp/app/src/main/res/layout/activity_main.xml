@@ -44,15 +44,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteY="0dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvThumbnail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/btn_Camera"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_UploadDrive"
-        app:layout_constraintVertical_bias="0.541" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

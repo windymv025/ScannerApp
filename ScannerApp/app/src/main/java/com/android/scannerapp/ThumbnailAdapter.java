@@ -21,29 +21,56 @@ import java.util.List;
 public class ThumbnailAdapter extends ArrayAdapter<File> {
     Context context;
     ArrayList<File> al_img;
+    ViewHolder viewHolder;
 
-
-    public ThumbnailAdapter(@NonNull Context context, int resource) {
-        super(context, resource);
+    public ThumbnailAdapter(Context context, ArrayList<File> al_img)
+    {
+        super(context,R.layout.row_thumbnail,al_img);
+        this.context = context;
+        this.al_img = al_img;
     }
 
-    public ThumbnailAdapter(@NonNull Context context, int resource, int textViewResourceId) {
-        super(context, resource, textViewResourceId);
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
     }
 
-    public ThumbnailAdapter(@NonNull Context context, int resource, @NonNull File[] objects) {
-        super(context, resource, objects);
+    @Override
+    public int getViewTypeCount() {
+        if(al_img.size() > 0)
+        {
+            return al_img.size();
+        }
+        else
+        {
+            return 1;
+        }
     }
 
-    public ThumbnailAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull File[] objects) {
-        super(context, resource, textViewResourceId, objects);
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
+       if(view == null){
+           view = LayoutInflater.from(getContext()).inflate(R.layout.row_thumbnail,parent,false);
+           viewHolder = new ViewHolder();
+           viewHolder.tv_filename = (TextView) view.findViewById(R.id.txtName);
+
+
+           view.setTag(viewHolder);
+       }
+       else
+       {
+           viewHolder = (ViewHolder)view.getTag();
+       }
+       viewHolder.tv_filename.setText(al_img.get(position).getName());
+      return view;
     }
 
-    public ThumbnailAdapter(@NonNull Context context, int resource, @NonNull List<File> objects) {
-        super(context, resource, objects);
-    }
+    public class ViewHolder
+    {
+        TextView tv_filename;
 
-    public ThumbnailAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<File> objects) {
-        super(context, resource, textViewResourceId, objects);
     }
 }

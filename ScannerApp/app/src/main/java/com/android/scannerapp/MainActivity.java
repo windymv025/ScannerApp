@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.wifi.hotspot2.pps.Credential;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Adapter;
@@ -41,6 +42,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.File;
 import java.security.Provider;
 import java.sql.Driver;
 import java.util.ArrayList;
@@ -54,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
     ImageButton btnCamera;
     int REQUEST_CODE = 123;
     ListView lvThumbnail;
-    ArrayList<Thumbnail> arrayThumb;
+    public static  ArrayList<File> filelist = new ArrayList<File>();
+    ThumbnailAdapter obj_adapter;
+    File dir;
 
     Button btnLoadImage;
     private static final int PICK_IMAGE = 1;
@@ -64,27 +68,17 @@ public class MainActivity extends AppCompatActivity {
     DriveServiceHelper driveServiceHelper;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        init();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //initView();
-        /*//load cac thumbnail cua hinh da chup o home
-        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
-        arrayThumb = new ArrayList<Thumbnail>();
+        init();
 
-
-        *//*arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc1", "01/01/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.boy_2, "Doc2", "01/02/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.woman_2, "Doc3", "01/03/2020"));
-        arrayThumb.add(new Thumbnail(R.drawable.boy, "Doc4", "01/04/2020"));*//*
-
-        ThumbnailAdapter TNAdapter = new ThumbnailAdapter(
-                MainActivity.this,
-                R.layout.row_thumbnail,
-                arrayThumb
-        );
-
-        lvThumbnail.setAdapter(TNAdapter);*/
 //        Màn hình chụp ảnh
         btnCamera = (ImageButton) findViewById(R.id.btn_Camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
@@ -116,45 +110,51 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*public void initView(){
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.rvThumbnail);
-        recyclerView.setHasFixedSize(true);
+    private void init() {
+        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
+        dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        getFile(dir);
+        obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
+        lvThumbnail.setAdapter(obj_adapter);
+    }
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        ArrayList<Thumbnail> arrayList = new ArrayList<>();
-        arrayList.add(new Thumbnail(R.drawable.boy, "Doc1", "00/00/00"));
-        arrayList.add(new Thumbnail(R.drawable.boy_2, "Doc2", "00/00/00"));
-        arrayList.add(new Thumbnail(R.drawable.woman, "Doc3", "00/00/00"));
-        arrayList.add(new Thumbnail(R.drawable.woman_2, "Doc4", "00/00/00"));
-        ThumbnailAdapter thumbnailAdapter = new ThumbnailAdapter(arrayList, getApplicationContext());
-        recyclerView.setAdapter(thumbnailAdapter);
-    }*/
-
-  /*  private ArrayList<String> getAllShownImagesPath(Activity activity) {
-        Uri uri;
-        Cursor cursor;
-        int column_index_data, column_index_folder_name;
-        ArrayList<String> listOfAllImages = new ArrayList<String>();
-        String absolutePathOfImage = null;
-        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-        String[] projection = { MediaStore.MediaColumns.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
-
-        cursor = activity.getContentResolver().query(uri, projection, null,
-                null, null);
-
-        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-        while (cursor.moveToNext()) {
-            absolutePathOfImage = cursor.getString(column_index_data);
-
-            listOfAllImages.add(absolutePathOfImage);
+    private ArrayList<File> getFile(File dir) {
+        File listfile[] = dir.listFiles();
+        if(listfile != null && listfile.length >0)
+        {
+            for(int i = 0; i<listfile.length;i++)
+            {
+                if(listfile[i].isDirectory())
+                {
+                    getFile(listfile[i]);
+                }
+                else
+                {
+                    boolean booleanimage = false;
+                    if(listfile[i].getName().endsWith(".jpg"))
+                    {
+                        for(int j=0;j<filelist.size();j++)
+                        {
+                            if(filelist.get(j).getName().equals(listfile[i].getName()))
+                            {
+                                booleanimage = true;
+                            }
+                        }
+                        if(booleanimage)
+                        {
+                            booleanimage = false;
+                        }
+                        else
+                        {
+                            filelist.add(listfile[i]);
+                        }
+                    }
+                }
+            }
         }
-        return listOfAllImages;
-    }*/
+        return filelist;
+    }
+
 
     //     open gallery
     private void openGallery() {

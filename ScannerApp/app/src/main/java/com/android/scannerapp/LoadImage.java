@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,7 +40,7 @@ public class LoadImage extends Activity {
     Uri imageUri;
     BitmapDrawable bitmapDrawable;
     Bitmap bitmap;
-    private String filepath = "AAAScannerApp";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
