@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,51 +14,36 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThumbnailAdapter extends RecyclerView.Adapter<ThumbnailAdapter.ViewHolder> {
-    ArrayList<Thumbnail> thumbnails;
+public class ThumbnailAdapter extends ArrayAdapter<File> {
     Context context;
+    ArrayList<File> al_img;
 
-    public ThumbnailAdapter(ArrayList<Thumbnail> thumbnails, Context context) {
-        this.thumbnails = thumbnails;
-        this.context = context;
+
+    public ThumbnailAdapter(@NonNull Context context, int resource) {
+        super(context, resource);
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View itemView = layoutInflater.inflate(R.layout.row_thumbnail, parent,false);
-
-
-        return new ViewHolder(itemView);
+    public ThumbnailAdapter(@NonNull Context context, int resource, int textViewResourceId) {
+        super(context, resource, textViewResourceId);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.txtName.setText(thumbnails.get(position).getName());
-        holder.txtDate.setText(thumbnails.get(position).getDay_create());
-        holder.imgThumb.setImageResource(thumbnails.get(position).getImage());
+    public ThumbnailAdapter(@NonNull Context context, int resource, @NonNull File[] objects) {
+        super(context, resource, objects);
     }
 
-    @Override
-    public int getItemCount() {
-        return thumbnails.size();
+    public ThumbnailAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull File[] objects) {
+        super(context, resource, textViewResourceId, objects);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView txtName;
-        TextView txtDate;
-        ImageView imgThumb;
+    public ThumbnailAdapter(@NonNull Context context, int resource, @NonNull List<File> objects) {
+        super(context, resource, objects);
+    }
 
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            txtName = (TextView)itemView.findViewById(R.id.txtName);
-            txtDate = itemView.findViewById(R.id.txtDateCreate);
-            imgThumb = itemView.findViewById(R.id.imgThumb);
-        }
+    public ThumbnailAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<File> objects) {
+        super(context, resource, textViewResourceId, objects);
     }
 }

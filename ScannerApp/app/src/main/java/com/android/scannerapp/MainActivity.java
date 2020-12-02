@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+        //initView();
         /*//load cac thumbnail cua hinh da chup o home
         lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
         arrayThumb = new ArrayList<Thumbnail>();
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void initView(){
+    /*public void initView(){
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.rvThumbnail);
         recyclerView.setHasFixedSize(true);
 
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         arrayList.add(new Thumbnail(R.drawable.woman_2, "Doc4", "00/00/00"));
         ThumbnailAdapter thumbnailAdapter = new ThumbnailAdapter(arrayList, getApplicationContext());
         recyclerView.setAdapter(thumbnailAdapter);
-    }
+    }*/
 
   /*  private ArrayList<String> getAllShownImagesPath(Activity activity) {
         Uri uri;

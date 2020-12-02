@@ -9,7 +9,9 @@
         android:id="@+id/imgThumb"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        android:src="@drawable/document"
+        android:scaleType="fitXY"/>
 
     <TextView
         android:id="@+id/txtName"
