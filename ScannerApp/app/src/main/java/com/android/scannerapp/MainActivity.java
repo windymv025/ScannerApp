@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.wifi.hotspot2.pps.Credential;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton btnCamera;
     int REQUEST_CODE = 123;
     ListView lvThumbnail;
-    public static ArrayList<File> filelist;
+    public static  ArrayList<File> filelist = new ArrayList<File>();
     ThumbnailAdapter obj_adapter;
     File dir;
 
@@ -77,31 +78,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/ScannerApp");
-        if (!file.exists()) {
-            if (file.mkdir()) {
-                Log.e("<Create Folder>", "Tạo thư mục thành công");
-            } else {
-                Log.e("<Create Folder>", "Tạo thư mục thất bại");
-            }
-        }
 
+        init();
         addControls();
         addEvents();
+    }
+
+    private void init() {
+        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
+            Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
+
+        }else {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        }
+        getFile(dir);
+        obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
+        lvThumbnail.setAdapter(obj_adapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loaded();
+        init();
     }
-
-    private void loaded() {
-        dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
-        filelist = getFile(dir);
-        obj_adapter.notifyDataSetChanged();
-    }
-
     private void addEvents() {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,16 +154,21 @@ public class MainActivity extends AppCompatActivity {
         //btnDrive = findViewById(R.id.btn_UploadDrive);
         btnAdd = findViewById(R.id.btnAdd);
 
-        lvThumbnail = findViewById(R.id.lvThumbnail);
-        filelist = new ArrayList<>();
-        obj_adapter = new ThumbnailAdapter(MainActivity.this, filelist);
+        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
+            Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
+
+        }else {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        }
+        getFile(dir);
+        obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
         lvThumbnail.setAdapter(obj_adapter);
-        loaded();
     }
 
     private ArrayList<File> getFile(File dir) {
         File listfile[] = dir.listFiles();
-        ArrayList<File> fileList = new ArrayList<File>();
         if (listfile != null && listfile.length > 0) {
             for (int i = 0; i < listfile.length; i++) {
                 if (listfile[i].isDirectory()) {
@@ -178,13 +184,13 @@ public class MainActivity extends AppCompatActivity {
                         if (booleanimage) {
                             booleanimage = false;
                         } else {
-                            fileList.add(listfile[i]);
+                            filelist.add(listfile[i]);
                         }
                     }
                 }
             }
         }
-        return fileList;
+        return filelist;
     }
 
 

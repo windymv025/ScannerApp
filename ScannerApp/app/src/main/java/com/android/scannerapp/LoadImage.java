@@ -2,6 +2,8 @@ package com.android.scannerapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -78,8 +81,17 @@ public class LoadImage extends Activity {
         Save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveToInternalStorage();
-                Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
+                bitmapDrawable = (BitmapDrawable)cropImage.getDrawable();
+                bitmap = bitmapDrawable.getBitmap();
+
+                try {
+                    saveBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                Toast.makeText(getApplicationContext(),"Image saved successfully", Toast.LENGTH_SHORT).show();
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
 
@@ -106,34 +118,40 @@ public class LoadImage extends Activity {
         });
     }
 
-    private void saveToInternalStorage() {
-        bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
-        bitmap = bitmapDrawable.getBitmap();
-        FileOutputStream fos = null;
-        File file = Environment.getExternalStorageDirectory();
-        File dir = new File(file.getAbsolutePath(), "/ScannerApp");
-        dir.mkdir();
+    private void saveBitmap(Bitmap bitmap) throws IOException{
+        String fileName = System.currentTimeMillis()+".jpg";
+        OutputStream outputStream;
+        boolean isSaved;
 
-        String filename = String.format("%d.jpeg", System.currentTimeMillis());
-        File outFile = new File(dir, filename);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            ContentResolver resolver = getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE,"image/jpg");
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/ScannerApp");
+            Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            outputStream = resolver.openOutputStream(uri);
+        }else {
+            String path = Environment.getExternalStorageDirectory().toString();
+            File folder = new File(path + "/" + "ScannerApp");
+            if(!folder.exists()){
+                folder.mkdirs();}
 
-        try {
-            fos = new FileOutputStream(outFile);
+            File file = new File(folder, fileName);
+            if(file.exists())
+                file.delete();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            outputStream = new FileOutputStream(file);
+
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+
+
         }
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-        try {
-            fos.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            fos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        outputStream.flush();
+        outputStream.close();
+
     }
     private Bitmap getBitmapFromView(View view) {
         Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
