@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.wifi.hotspot2.pps.Credential;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -112,7 +114,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
-        dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
+            Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
+
+        }else {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        }
         getFile(dir);
         obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
         lvThumbnail.setAdapter(obj_adapter);
@@ -120,32 +128,21 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<File> getFile(File dir) {
         File listfile[] = dir.listFiles();
-        if(listfile != null && listfile.length >0)
-        {
-            for(int i = 0; i<listfile.length;i++)
-            {
-                if(listfile[i].isDirectory())
-                {
+        if(listfile != null && listfile.length >0) {
+            for(int i = 0; i<listfile.length;i++) {
+                if(listfile[i].isDirectory()) {
                     getFile(listfile[i]);
-                }
-                else
-                {
+                } else {
                     boolean booleanimage = false;
-                    if(listfile[i].getName().endsWith(".jpg"))
-                    {
-                        for(int j=0;j<filelist.size();j++)
-                        {
-                            if(filelist.get(j).getName().equals(listfile[i].getName()))
-                            {
+                    if(listfile[i].getName().endsWith(".jpg")) {
+                        for(int j=0;j<filelist.size();j++) {
+                            if(filelist.get(j).getName().equals(listfile[i].getName())) {
                                 booleanimage = true;
                             }
                         }
-                        if(booleanimage)
-                        {
+                        if(booleanimage) {
                             booleanimage = false;
-                        }
-                        else
-                        {
+                        } else {
                             filelist.add(listfile[i]);
                         }
                     }
