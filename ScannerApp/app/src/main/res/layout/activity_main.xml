@@ -62,11 +62,12 @@
             app:srcCompat="@android:drawable/ic_menu_gallery" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/lvThumbnail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <GridView
+        android:id="@+id/gvThumbnail"
+        android:layout_width="404dp"
+        android:layout_height="442dp"
         android:layout_gravity="center"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:numColumns="3" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

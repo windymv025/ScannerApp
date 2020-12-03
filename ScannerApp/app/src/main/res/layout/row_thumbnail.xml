@@ -15,11 +15,12 @@
 
     <TextView
         android:id="@+id/txtName"
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/imgThumb"
+        android:layout_below="@id/imgThumb"
+        android:layout_alignParentLeft="true"
         android:text="tên ảnh"
-        android:textSize="30dp"
+        android:textSize="10dp"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

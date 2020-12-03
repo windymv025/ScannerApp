@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton btnCamera;
     int REQUEST_CODE = 123;
-    ListView lvThumbnail;
+    GridView gvThumbnail;
     public static  ArrayList<File> filelist = new ArrayList<File>();
     ThumbnailAdapter obj_adapter;
     File dir;
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
+        gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
             dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
             Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         }
         getFile(dir);
         obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
-        lvThumbnail.setAdapter(obj_adapter);
+        gvThumbnail.setAdapter(obj_adapter);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         //btnDrive = findViewById(R.id.btn_UploadDrive);
         btnAdd = findViewById(R.id.btnAdd);
 
-        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
+        gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
             dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
             Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         }
         getFile(dir);
         obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
-        lvThumbnail.setAdapter(obj_adapter);
+        gvThumbnail.setAdapter(obj_adapter);
     }
 
     private ArrayList<File> getFile(File dir) {
