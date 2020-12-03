@@ -81,7 +81,7 @@ public class LoadImage extends Activity {
         Save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bitmapDrawable = (BitmapDrawable)cropImage.getDrawable();
+                bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
                 bitmap = bitmapDrawable.getBitmap();
 
                 try {
@@ -91,7 +91,7 @@ public class LoadImage extends Activity {
                 }
 
 
-                Toast.makeText(getApplicationContext(),"Image saved successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
 
@@ -118,27 +118,28 @@ public class LoadImage extends Activity {
         });
     }
 
-    private void saveBitmap(Bitmap bitmap) throws IOException{
-        String fileName = System.currentTimeMillis()+".jpg";
+    private void saveBitmap(Bitmap bitmap) throws IOException {
+        String fileName = System.currentTimeMillis() + ".jpg";
         OutputStream outputStream;
         boolean isSaved;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentResolver resolver = getContentResolver();
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE,"image/jpg");
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
             contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/ScannerApp");
             Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
             outputStream = resolver.openOutputStream(uri);
-        }else {
+        } else {
             String path = Environment.getExternalStorageDirectory().toString();
             File folder = new File(path + "/" + "ScannerApp");
-            if(!folder.exists()){
-                folder.mkdirs();}
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
 
             File file = new File(folder, fileName);
-            if(file.exists())
+            if (file.exists())
                 file.delete();
 
 
@@ -153,56 +154,49 @@ public class LoadImage extends Activity {
         outputStream.close();
 
     }
+
     private Bitmap getBitmapFromView(View view) {
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(returnedBitmap);
-        Drawable bgDrawable =view.getBackground();
-        if (bgDrawable!=null) {
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null) {
             //has background drawable, then draw it on the canvas
             bgDrawable.draw(canvas);
-        }   else{
+        } else {
             //does not have background drawable, then draw white background on the canvas
             canvas.drawColor(Color.WHITE);
         }
         view.draw(canvas);
         return returnedBitmap;
     }
-    private void shareActivity()
-    {
+
+    private void shareActivity() {
         bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
         bitmap = bitmapDrawable.getBitmap();
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "title");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                values);
+
         try {
-            FileOutputStream fos = null;
+            OutputStream outputStream = null;
             File file = Environment.getExternalStorageDirectory();
             File dir = new File(file.getAbsolutePath(), "/ScannerApp");
             dir.mkdir();
 
-            String filename = String.format("%d.jpeg", System.currentTimeMillis());
-            File outFile = new File(dir, filename);
             try {
-                fos = new FileOutputStream(outFile);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            try {
-                fos.flush();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                fos.close();
+                outputStream = getContentResolver().openOutputStream(uri);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                outputStream.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("image/jpeg");
-
-            share.putExtra(Intent.EXTRA_STREAM,
-                    Uri.parse(filename));
-
+            share.putExtra(Intent.EXTRA_STREAM, uri);
             startActivity(Intent.createChooser(share, "share with"));
 
             //outFile.delete();
