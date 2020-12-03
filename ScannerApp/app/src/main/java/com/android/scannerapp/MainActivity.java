@@ -44,6 +44,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageOptions;
 
 import java.io.File;
 import java.security.Provider;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton btnCamera;
     int REQUEST_CODE = 123;
     ListView lvThumbnail;
-    public static  ArrayList<File> filelist;
+    public static ArrayList<File> filelist;
     ThumbnailAdapter obj_adapter;
     File dir;
 
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/ScannerApp");
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/ScannerApp");
         if (!file.exists()) {
             if (file.mkdir()) {
                 Log.e("<Create Folder>", "Tạo thư mục thành công");
@@ -121,11 +122,10 @@ public class MainActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(btnLoadImage.getVisibility()==View.GONE && btnCamera.getVisibility()==View.GONE)
-                {
+                if (btnLoadImage.getVisibility() == View.GONE && btnCamera.getVisibility() == View.GONE) {
                     btnLoadImage.setVisibility(View.VISIBLE);
                     btnCamera.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     btnLoadImage.setVisibility(View.GONE);
                     btnCamera.setVisibility(View.GONE);
                 }
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         lvThumbnail = findViewById(R.id.lvThumbnail);
         filelist = new ArrayList<>();
-        obj_adapter = new ThumbnailAdapter(MainActivity.this,filelist);
+        obj_adapter = new ThumbnailAdapter(MainActivity.this, filelist);
         lvThumbnail.setAdapter(obj_adapter);
         loaded();
     }
@@ -163,32 +163,21 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<File> getFile(File dir) {
         File listfile[] = dir.listFiles();
         ArrayList<File> fileList = new ArrayList<File>();
-        if(listfile != null && listfile.length >0)
-        {
-            for(int i = 0; i<listfile.length;i++)
-            {
-                if(listfile[i].isDirectory())
-                {
+        if (listfile != null && listfile.length > 0) {
+            for (int i = 0; i < listfile.length; i++) {
+                if (listfile[i].isDirectory()) {
                     getFile(listfile[i]);
-                }
-                else
-                {
+                } else {
                     boolean booleanimage = false;
-                    if(listfile[i].getName().endsWith(".jpg")||listfile[i].getName().endsWith(".png")||listfile[i].getName().endsWith(".jpeg"))
-                    {
-                        for(int j=0;j<filelist.size();j++)
-                        {
-                            if(filelist.get(j).getName().equals(listfile[i].getName()))
-                            {
+                    if (listfile[i].getName().endsWith(".jpg") || listfile[i].getName().endsWith(".png") || listfile[i].getName().endsWith(".jpeg")) {
+                        for (int j = 0; j < filelist.size(); j++) {
+                            if (filelist.get(j).getName().equals(listfile[i].getName())) {
                                 booleanimage = true;
                             }
                         }
-                        if(booleanimage)
-                        {
+                        if (booleanimage) {
                             booleanimage = false;
-                        }
-                        else
-                        {
+                        } else {
                             fileList.add(listfile[i]);
                         }
                     }
@@ -208,27 +197,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         try {
             super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && null != data) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && null != data) {
-                    Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+                // Get uri
+                imgUri = result.getUri();
 
-                    // Get uri
-                    imgUri = result.getUri();
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
-//                    int nh = (int) (bitmap.getHeight() * (1024.0 / bitmap.getWidth()));
-//                    Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 1024, nh, true);
-                    // Set image
-
-                    openLoadImageForm.putExtra("imageUri", imgUri.toString());
-                    startActivity(openLoadImageForm);
-                }else {
-                    Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
-                }
-
+                openLoadImageForm.putExtra("imageUri", imgUri.toString());
+                startActivity(openLoadImageForm);
+            } else if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+                imgUri =  data.getData();
+                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+                openLoadImageForm.putExtra("imageUri", imgUri.toString());
+                startActivity(openLoadImageForm);
+            } else {
+                Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
+            }
 
         } catch (Exception e) {
             Toast.makeText(this, "Fail", Toast.LENGTH_LONG).show();
