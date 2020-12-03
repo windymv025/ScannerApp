@@ -48,8 +48,18 @@ public class LoadImage extends Activity {
         setContentView(R.layout.load_image_layout);
 
         cropImage = (ImageView) findViewById(R.id.cropImageView);
-        ActivityCompat.requestPermissions(LoadImage.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        ActivityCompat.requestPermissions(LoadImage.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        ActivityCompat.requestPermissions(LoadImage.this,
+                new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                1
+        );
+        ActivityCompat.requestPermissions(LoadImage.this,
+                new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                },
+                1
+        );
 
 
         final Intent intent = getIntent();
@@ -64,13 +74,12 @@ public class LoadImage extends Activity {
             @Override
             public void onClick(View v) {
                 saveToInternalStorage();
-                Toast.makeText(getApplicationContext(),"Image saved successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
 
             }
         });
-
 
 
         exit = (ImageView) findViewById(R.id.btnExitLoadImage);
@@ -82,15 +91,16 @@ public class LoadImage extends Activity {
             }
         });
     }
-    private void saveToInternalStorage(){
+
+    private void saveToInternalStorage() {
         bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
         bitmap = bitmapDrawable.getBitmap();
         FileOutputStream fos = null;
         File file = Environment.getExternalStorageDirectory();
         File dir = new File(file.getAbsolutePath(), "/ScannerApp");
-        dir.mkdirs();
+        dir.mkdir();
 
-        String filename = String.format("%d.jpg",System.currentTimeMillis());
+        String filename = String.format("%d.jpeg", System.currentTimeMillis());
         File outFile = new File(dir, filename);
 
         try {
@@ -100,14 +110,14 @@ public class LoadImage extends Activity {
             e.printStackTrace();
         }
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-        try{
+        try {
             fos.flush();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
+        try {
             fos.close();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -15,9 +15,11 @@ import android.net.wifi.hotspot2.pps.Credential;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +38,7 @@ import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.gson.GsonFactory;
@@ -53,34 +56,52 @@ import java.util.prefs.Preferences;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton btnCamera;
+    FloatingActionButton btnAdd;
+
+    FloatingActionButton btnCamera;
     int REQUEST_CODE = 123;
     ListView lvThumbnail;
-    public static  ArrayList<File> filelist = new ArrayList<File>();
+    public static  ArrayList<File> filelist;
     ThumbnailAdapter obj_adapter;
     File dir;
 
-    Button btnLoadImage;
+    FloatingActionButton btnLoadImage;
     private static final int PICK_IMAGE = 1;
     Uri imgUri;
 
-    Button btnDrive;
+    FloatingActionButton btnDrive;
     DriveServiceHelper driveServiceHelper;
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        init();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/ScannerApp");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                Log.e("<Create Folder>", "Tạo thư mục thành công");
+            } else {
+                Log.e("<Create Folder>", "Tạo thư mục thất bại");
+            }
+        }
 
-//        Màn hình chụp ảnh
-        btnCamera = (ImageButton) findViewById(R.id.btn_Camera);
+        addControls();
+        addEvents();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loaded();
+    }
+
+    private void loaded() {
+        dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        filelist = getFile(dir);
+        obj_adapter.notifyDataSetChanged();
+    }
+
+    private void addEvents() {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,37 +110,59 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // load image from gallery
-        btnLoadImage = (Button) findViewById(R.id.btnLoadImage);
-        btnLoadImage.setVisibility(View.INVISIBLE);
+
         btnLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openGallery();
             }
         });
-        //upload Drive
-        btnDrive = (Button) findViewById(R.id.btn_UploadDrive);
-        btnDrive.setOnClickListener(new View.OnClickListener() {
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestSignIn();
-                // uploadPdfFile(v);
+                if(btnLoadImage.getVisibility()==View.GONE && btnCamera.getVisibility()==View.GONE)
+                {
+                    btnLoadImage.setVisibility(View.VISIBLE);
+                    btnCamera.setVisibility(View.VISIBLE);
+                }else {
+                    btnLoadImage.setVisibility(View.GONE);
+                    btnCamera.setVisibility(View.GONE);
+                }
             }
         });
 
+//        btnDrive.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                requestSignIn();
+//                // uploadPdfFile(v);
+//            }
+//        });
     }
 
-    private void init() {
-        lvThumbnail = (ListView) findViewById(R.id.lvThumbnail);
-        dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
-        getFile(dir);
-        obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
+    private void addControls() {
+        //        Màn hình chụp ảnh
+        btnCamera = findViewById(R.id.btn_Camera);
+
+        // load image from gallery
+        btnLoadImage = findViewById(R.id.btnLoadImage);
+        //btnLoadImage.setVisibility(View.INVISIBLE);
+
+        //upload Drive
+        //btnDrive = findViewById(R.id.btn_UploadDrive);
+        btnAdd = findViewById(R.id.btnAdd);
+
+        lvThumbnail = findViewById(R.id.lvThumbnail);
+        filelist = new ArrayList<>();
+        obj_adapter = new ThumbnailAdapter(MainActivity.this,filelist);
         lvThumbnail.setAdapter(obj_adapter);
+        loaded();
     }
 
     private ArrayList<File> getFile(File dir) {
         File listfile[] = dir.listFiles();
+        ArrayList<File> fileList = new ArrayList<File>();
         if(listfile != null && listfile.length >0)
         {
             for(int i = 0; i<listfile.length;i++)
@@ -131,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     boolean booleanimage = false;
-                    if(listfile[i].getName().endsWith(".jpg"))
+                    if(listfile[i].getName().endsWith(".jpg")||listfile[i].getName().endsWith(".png")||listfile[i].getName().endsWith(".jpeg"))
                     {
                         for(int j=0;j<filelist.size();j++)
                         {
@@ -146,13 +189,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            filelist.add(listfile[i]);
+                            fileList.add(listfile[i]);
                         }
                     }
                 }
             }
         }
-        return filelist;
+        return fileList;
     }
 
 

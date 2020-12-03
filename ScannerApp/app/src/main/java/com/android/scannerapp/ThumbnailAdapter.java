@@ -1,7 +1,11 @@
 package com.android.scannerapp;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,27 +31,23 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
     ArrayList<File> al_img;
     ViewHolder viewHolder;
 
-    public ThumbnailAdapter(Context context, ArrayList<File> al_img)
-    {
+    public ThumbnailAdapter(Context context, ArrayList<File> al_img) {
         super(context,R.layout.row_thumbnail,al_img);
+        //super(context, R.layout.grid_view_item_layout, al_img);
         this.context = context;
         this.al_img = al_img;
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
+    public int getItemViewType(int position) {
         return position;
     }
 
     @Override
     public int getViewTypeCount() {
-        if(al_img.size() > 0)
-        {
+        if (al_img.size() > 0) {
             return al_img.size();
-        }
-        else
-        {
+        } else {
             return 1;
         }
     }
@@ -52,25 +56,28 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
-       if(view == null){
-           view = LayoutInflater.from(getContext()).inflate(R.layout.row_thumbnail,parent,false);
-           viewHolder = new ViewHolder();
-           viewHolder.tv_filename = (TextView) view.findViewById(R.id.txtName);
+        //ViewHolder holder;
+        if (view == null) {
+            view = LayoutInflater.from(getContext()).inflate(R.layout.row_thumbnail,parent,false);
+            //view = LayoutInflater.from(getContext()).inflate(R.layout.grid_view_item_layout, null);
+            viewHolder = new ViewHolder();
+            viewHolder.txtName = (TextView) view.findViewById(R.id.txtName);
+            viewHolder.imgThumb = view.findViewById(R.id.imgThumb);
+            view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
+        }
+        viewHolder.txtName.setText(al_img.get(position).getName());
+        if(al_img.get(position).exists()) {
+            Bitmap myBitmap = BitmapFactory.decodeFile(al_img.get(position).getAbsolutePath());
+            viewHolder.imgThumb.setImageBitmap(myBitmap);
+        }
 
-
-           view.setTag(viewHolder);
-       }
-       else
-       {
-           viewHolder = (ViewHolder)view.getTag();
-       }
-       viewHolder.tv_filename.setText(al_img.get(position).getName());
-      return view;
+            return view;
     }
 
-    public class ViewHolder
-    {
-        TextView tv_filename;
-
+    public class ViewHolder {
+        ImageView imgThumb;
+        TextView txtName;
     }
 }

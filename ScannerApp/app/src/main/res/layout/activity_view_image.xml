@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoadImage">
-
+    tools:context=".ViewImage">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,34 +20,50 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView
-        android:id="@+id/cropImageView"
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
+    <Button
+        android:id="@+id/btnConvertPDF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="20dp"
+        android:text="Convert PDF file"
+        />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:orientation="horizontal"
+        android:layout_gravity="bottom|end"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp"
         android:padding="10dp">
 
-        <ImageButton
-            android:id="@+id/btnExitLoadImage"
+        <ImageView
+            android:id="@+id/btnShare"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginRight="20dp"
-            android:backgroundTint="?android:attr/colorBackground"
-            android:src="@android:drawable/ic_delete" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:src="@android:drawable/ic_menu_share" />
 
         <ImageView
-            android:id="@+id/Save"
+            android:id="@+id/btnDelete"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@color/cardview_shadow_end_color"
-            android:backgroundTint="@color/cardview_light_background"
-            android:src="@drawable/ic_baseline_check_24" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="20dp"
+            android:clickable="true"
+            android:src="@android:drawable/ic_delete" />
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
