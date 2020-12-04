@@ -113,7 +113,7 @@ public class LoadImage extends Activity {
             @Override
             public void onClick(View v) {
                 shareActivity();
-                Toast.makeText(getApplicationContext(), "Share successfully", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Share successfully", Toast.LENGTH_SHORT).show();
             }
         });
     }
