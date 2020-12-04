@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
             dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
-            Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
 
         }else {
             dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
