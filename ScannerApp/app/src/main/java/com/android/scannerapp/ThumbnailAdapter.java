@@ -33,7 +33,6 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
 
     public ThumbnailAdapter(Context context, ArrayList<File> al_img) {
         super(context,R.layout.row_thumbnail,al_img);
-        //super(context, R.layout.grid_view_item_layout, al_img);
         this.context = context;
         this.al_img = al_img;
     }
@@ -56,10 +55,8 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
-        //ViewHolder holder;
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.row_thumbnail,parent,false);
-            //view = LayoutInflater.from(getContext()).inflate(R.layout.grid_view_item_layout, null);
             viewHolder = new ViewHolder();
             viewHolder.txtName = (TextView) view.findViewById(R.id.txtName);
             viewHolder.imgThumb = view.findViewById(R.id.imgThumb);
