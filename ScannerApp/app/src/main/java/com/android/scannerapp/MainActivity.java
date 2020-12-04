@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -133,13 +134,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        btnDrive.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                requestSignIn();
-//                // uploadPdfFile(v);
-//            }
-//        });
+        gvThumbnail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                xuLyChonFileTrenGridView(position);
+            }
+        });
+    }
+
+    private void xuLyChonFileTrenGridView(int position) {
+        File f = filelist.get(position);
+        Intent intent = new Intent(MainActivity.this, ViewImage.class);
+        intent.putExtra("IMAGE_CHOOSE_ON_GRIDVIEW",f);
+        startActivity(intent);
     }
 
     private void addControls() {
@@ -151,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         //btnLoadImage.setVisibility(View.INVISIBLE);
 
         //upload Drive
-        //btnDrive = findViewById(R.id.btn_UploadDrive);
         btnAdd = findViewById(R.id.btnAdd);
 
         gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
@@ -226,73 +232,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Fail", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
-
-        //drive
-        switch (requestCode) {
-            case 400:
-                if (resultCode == RESULT_OK) {
-                    handleSignInIntent(data);
-                }
-        }
-    }
-
-    private void handleSignInIntent(Intent data) {
-        GoogleSignIn.getSignedInAccountFromIntent(data)
-                .addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onSuccess(GoogleSignInAccount googleSignInAccount) {
-
-                        GoogleAccountCredential credential =
-                                GoogleAccountCredential.usingOAuth2(MainActivity.this, Collections.singleton(Scopes.DRIVE_FILE));
-
-                        credential.setSelectedAccount(googleSignInAccount.getAccount());
-                        Drive googleDriveService = new Drive.Builder(
-                                AndroidHttp.newCompatibleTransport(),
-                                new GsonFactory(),
-                                credential)
-                                .setApplicationName("Scanner App")
-                                .build();
-
-                        driveServiceHelper = new DriveServiceHelper(googleDriveService);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
-
-    }
-
-    //upload Drive
-    private void requestSignIn() {
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestScopes(new Scope(Scopes.DRIVE_FILE))
-                .build();
-        GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
-        startActivityForResult(client.getSignInIntent(), 400);
-
-    }
-
-
-    public void uploadPdfFile(View v) {
-        String filePath = "/storage/emulated/0/mypdf.pdf";
-
-        driveServiceHelper.createFilePDF(filePath).addOnSuccessListener(new OnSuccessListener<String>() {
-            @Override
-            public void onSuccess(String s) {
-                Toast.makeText(getApplicationContext(), "upload successfully", Toast.LENGTH_LONG).show();
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "check your google drive api key", Toast.LENGTH_LONG).show();
-                    }
-                });
-
     }
 
 }

@@ -28,36 +28,43 @@
 
 
     <LinearLayout
-        android:layout_width="216dp"
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:orientation="horizontal"
-        android:padding="10dp">
+        android:background="@color/colorPrimaryDark"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/btnExitLoadImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginRight="20dp"
-            android:backgroundTint="?android:attr/colorBackground"
-            android:src="@android:drawable/ic_delete" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
-        <ImageView
-            android:id="@+id/Save"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@color/cardview_shadow_end_color"
-            android:backgroundTint="@color/cardview_light_background"
-            android:src="@drawable/ic_baseline_check_24" />
+            <ImageView
+                android:id="@+id/btnExitLoadImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="20dp"
+                app:srcCompat="@android:drawable/ic_delete" />
 
-        <ImageView
-            android:id="@+id/Share"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:background="@color/cardview_shadow_end_color"
-            android:backgroundTint="@color/cardview_light_background"
-            android:src="@drawable/ic_baseline_share_24" />
+            <ImageView
+                android:id="@+id/Save"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitCenter"
+                android:src="@android:drawable/checkbox_off_background"
+                app:srcCompat="@drawable/ic_baseline_check_24" />
+
+            <ImageView
+                android:id="@+id/Share"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                app:srcCompat="@android:drawable/ic_menu_share" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
