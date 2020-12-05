@@ -1,4 +1,4 @@
-package com.android.scannerapp;
+package com.android.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,6 +17,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.scannerapp.R;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

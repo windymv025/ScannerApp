@@ -4,11 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,33 +19,28 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.ByteArrayOutputStream;
+import com.android.io.IOPdfDocument;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Random;
-import java.util.UUID;
-
-import static android.app.Activity.RESULT_OK;
-import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 public class LoadImage extends Activity {
     private ImageView cropImage, exit;
     private ImageView Save;
     private Spinner Share;
+    private EditText txtNamePdfFile;
+
     private String[] listChooseShare = new String[]{"Share with PDF file", "Share with JPEG file"};
     private ArrayAdapter<String> adapterShare;
+
     private Uri imageUri;
     private BitmapDrawable bitmapDrawable;
     private Bitmap bitmap;
@@ -78,8 +70,8 @@ public class LoadImage extends Activity {
         );
     }
 
-
     private void addControls() {
+        txtNamePdfFile = findViewById(R.id.txtNamePdfFile);
         cropImage = findViewById(R.id.cropImageView);
 
         final Intent intent = getIntent();
@@ -102,16 +94,23 @@ public class LoadImage extends Activity {
         Save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String fileName = System.currentTimeMillis() + "";
+                String fileName = new String();
+                if (txtNamePdfFile.getText().toString().trim().isEmpty()) {
+                    fileName = System.currentTimeMillis() + "";
+                } else {
+                    fileName = txtNamePdfFile.getText().toString().trim();
+                    if (fileName.contains(".pdf")) {
+                        fileName = fileName.substring(0, fileName.lastIndexOf(".pdf"));
+                    }
+                }
                 bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
                 bitmap = bitmapDrawable.getBitmap();
-                Thread t = new Thread(new IOPdfDocument(bitmap,fileName+".pdf"));
+
+                Thread t = new Thread(new IOPdfDocument(bitmap, fileName + ".pdf"));
                 t.start();
-                try {
-                    saveBitmap(bitmap, fileName);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                saveBitmap(bitmap, fileName);
+
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
                 Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
@@ -132,10 +131,9 @@ public class LoadImage extends Activity {
         Share.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position==0){
+                if (position == 0) {
 
-                }else
-                {
+                } else {
                     shareImageActivity();
                 }
 
@@ -148,37 +146,40 @@ public class LoadImage extends Activity {
         });
     }
 
-    private void saveBitmap(Bitmap bitmap, String fileName) throws IOException {
-        fileName += ".jpg";
-        OutputStream outputStream;
-        boolean isSaved;
+    private void saveBitmap(Bitmap bitmap, String fileName) {
+        try {
+            fileName += ".jpeg";
+            OutputStream outputStream;
+            boolean isSaved;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentResolver resolver = getContentResolver();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/ScannerApp");
-            Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-            outputStream = resolver.openOutputStream(uri);
-        } else {
-            String path = Environment.getExternalStorageDirectory().toString();
-            File folder = new File(path + "/" + "ScannerApp");
-            if (!folder.exists()) {
-                folder.mkdirs();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentResolver resolver = getContentResolver();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/ScannerApp");
+                Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                outputStream = resolver.openOutputStream(uri);
+            } else {
+                String path = Environment.getExternalStorageDirectory().toString();
+                File folder = new File(path + "/" + "ScannerApp");
+                if (!folder.exists()) {
+                    folder.mkdirs();
+                }
+
+                File file = new File(folder, fileName);
+                if (file.exists())
+                    file.delete();
+
+                outputStream = new FileOutputStream(file);
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
             }
-
-            File file = new File(folder, fileName);
-            if (file.exists())
-                file.delete();
-
-            outputStream = new FileOutputStream(file);
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            Log.e("<Save image>", e.getLocalizedMessage());
         }
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        outputStream.flush();
-        outputStream.close();
-
     }
 
     private Bitmap getBitmapFromView(View view) {

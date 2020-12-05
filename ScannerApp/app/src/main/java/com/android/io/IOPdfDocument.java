@@ -1,4 +1,4 @@
-package com.android.scannerapp;
+package com.android.io;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
