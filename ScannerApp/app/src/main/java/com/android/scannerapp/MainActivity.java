@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 openLoadImageForm.putExtra("imageUri", imgUri.toString());
                 startActivity(openLoadImageForm);
             } else if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+                //imgUri = result.getUri();
                 imgUri = data.getData();
                 Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
                 openLoadImageForm.putExtra("imageUri", imgUri.toString());
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = CropImage.activity(imgUri).getIntent(getApplicationContext());
+                Intent intent = CropImage.activity(imgUri).getIntent(MainActivity.this);
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onItemLongClick(AdapterView parent, View view, final int position, long id) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-            alertDialogBuilder.setMessage("Bán có muốn xóa hình ảnh này!");
+            alertDialogBuilder.setMessage("Bạn có muốn xóa hình ảnh này!");
             alertDialogBuilder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

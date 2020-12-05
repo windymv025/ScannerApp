@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:longClickable="true"
     tools:context=".LoadImage">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -16,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" >
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,8 +43,8 @@
         android:id="@+id/cropImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_marginBottom="55dp" />
 
 
     <LinearLayout
@@ -74,8 +76,9 @@
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
                 android:scaleType="fitCenter"
-                android:src="@android:drawable/ic_menu_save"
-                />
+                android:tooltipText="Save PDF"
+                android:contextClickable="true"
+                android:src="@android:drawable/ic_menu_save" />
 
             <Spinner
                 android:id="@+id/Share"
