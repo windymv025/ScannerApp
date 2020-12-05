@@ -37,7 +37,7 @@ public class IOPdfDocument implements Runnable {
 
         if (this.imageFile.exists()) {
             bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            scanledbmp = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false);
+            scanledbmp = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() - 40, bitmap.getHeight(), false);
         }
     }
 
@@ -52,7 +52,7 @@ public class IOPdfDocument implements Runnable {
             pdfFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp/" + filePDFname);
         }
 
-        scanledbmp = Bitmap.createScaledBitmap(bitmap, WIDTH_PAGE, WIDTH_PAGE * bitmap.getWidth() / bitmap.getHeight(), false);
+        scanledbmp = Bitmap.createScaledBitmap(bitmap, WIDTH_PAGE - 40, WIDTH_PAGE * bitmap.getWidth() / bitmap.getHeight(), false);
     }
 
     private void setup() {
@@ -79,7 +79,7 @@ public class IOPdfDocument implements Runnable {
         PdfDocument.Page page = pdfDocument.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
 
-        canvas.drawBitmap(scanledbmp, 0, 0, paint);
+        canvas.drawBitmap(scanledbmp, 20, 20, paint);
 
         pdfDocument.finishPage(page);
 

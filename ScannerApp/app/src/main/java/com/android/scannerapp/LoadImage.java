@@ -105,11 +105,9 @@ public class LoadImage extends Activity {
                 }
                 bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
                 bitmap = bitmapDrawable.getBitmap();
-
+                saveBitmap(bitmap, fileName);
                 Thread t = new Thread(new IOPdfDocument(bitmap, fileName + ".pdf"));
                 t.start();
-
-                saveBitmap(bitmap, fileName);
 
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
@@ -141,7 +139,6 @@ public class LoadImage extends Activity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
     }
