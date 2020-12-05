@@ -15,8 +15,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class IOPdfDocument implements Runnable {
-    static final int WIDTH_PAGE = 1200;
-    static final int HEIGHT_PAGE = 2010;
+    private int WIDTH_PAGE;
+    private int HEIGHT_PAGE;
 
     private File imageFile;
     private File pdfFile;
@@ -37,7 +37,9 @@ public class IOPdfDocument implements Runnable {
 
         if (this.imageFile.exists()) {
             bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            scanledbmp = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() - 40, bitmap.getHeight(), false);
+            WIDTH_PAGE = bitmap.getWidth();
+            HEIGHT_PAGE = bitmap.getHeight();
+            scanledbmp = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false);
         }
     }
 
@@ -51,8 +53,9 @@ public class IOPdfDocument implements Runnable {
         } else {
             pdfFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp/" + filePDFname);
         }
-
-        scanledbmp = Bitmap.createScaledBitmap(bitmap, WIDTH_PAGE - 40, WIDTH_PAGE * bitmap.getWidth() / bitmap.getHeight(), false);
+        WIDTH_PAGE = bitmap.getWidth();
+        HEIGHT_PAGE = bitmap.getHeight();
+        scanledbmp = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false);
     }
 
     private void setup() {
@@ -79,7 +82,7 @@ public class IOPdfDocument implements Runnable {
         PdfDocument.Page page = pdfDocument.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
 
-        canvas.drawBitmap(scanledbmp, 20, 20, paint);
+        canvas.drawBitmap(scanledbmp, 0, 0, paint);
 
         pdfDocument.finishPage(page);
 
