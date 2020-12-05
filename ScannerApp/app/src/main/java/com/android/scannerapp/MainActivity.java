@@ -2,6 +2,8 @@ package com.android.scannerapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -177,6 +179,8 @@ public class MainActivity extends AppCompatActivity {
                 xuLyChonFileTrenGridView(position);
             }
         });
+
+        gvThumbnail.setOnItemLongClickListener(new ItemLongClickRemove());
     }
 
     private void xuLyTimKiemFileName() {
@@ -230,5 +234,32 @@ public class MainActivity extends AppCompatActivity {
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
+    }
+    //delete picture
+    public class ItemLongClickRemove implements AdapterView.OnItemLongClickListener {
+        @Override
+        public boolean onItemLongClick(AdapterView parent, View view, final int position, long id) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            alertDialogBuilder.setMessage("Bán có muốn xóa hình ảnh này!");
+            alertDialogBuilder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    File listfile[] = dir.listFiles();
+                    // delete picture
+                    filelist.remove(position);
+                    listfile[position].delete();
+                    //update gridview
+                    obj_adapter.notifyDataSetChanged();
+
+                }
+            });
+            alertDialogBuilder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            alertDialogBuilder.show();
+            return true;
+        }
     }
 }
