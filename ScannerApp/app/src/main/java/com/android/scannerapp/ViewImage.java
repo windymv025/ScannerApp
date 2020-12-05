@@ -2,7 +2,9 @@ package com.android.scannerapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -112,6 +114,25 @@ public class ViewImage extends AppCompatActivity {
     }
 
     private void xuLyDeleteFile() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ViewImage.this);
+        alertDialogBuilder.setMessage("Bán có muốn xóa hình ảnh này!");
+        alertDialogBuilder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent deleteIntent = new Intent(ViewImage.this,MainActivity.class);
+                Intent intent = getIntent();
+                File imageFile = (File) intent.getSerializableExtra("IMAGE_CHOOSE_ON_GRIDVIEW");
+                File f = new File(imageFile.getPath());
+                f.delete();
+                startActivity(deleteIntent);
+
+            }
+        }).setNegativeButton("Không", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alertDialogBuilder.show();
     }
 
     private void addCotrols() {
