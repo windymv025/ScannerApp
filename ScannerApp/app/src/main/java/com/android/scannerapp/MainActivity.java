@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -58,22 +59,21 @@ import java.util.Collections;
 import java.util.prefs.Preferences;
 
 public class MainActivity extends AppCompatActivity {
-
-    FloatingActionButton btnAdd;
-
-    FloatingActionButton btnCamera;
-    int REQUEST_CODE = 123;
-    GridView gvThumbnail;
-    public static  ArrayList<File> filelist = new ArrayList<File>();
-    ThumbnailAdapter obj_adapter;
-    File dir;
-
-    FloatingActionButton btnLoadImage;
+    private static final int REQUEST_CODE = 123;
     private static final int PICK_IMAGE = 1;
-    Uri imgUri;
 
-    FloatingActionButton btnDrive;
-    DriveServiceHelper driveServiceHelper;
+    private FloatingActionButton btnAdd;
+    private LinearLayout layoutButtonAdd;
+    private FloatingActionButton btnCamera;
+    private GridView gvThumbnail;
+    private FloatingActionButton btnLoadImage;
+    private SearchView searchView;
+    private FloatingActionButton btnSearch;
+
+    private ArrayList<File> filelist = new ArrayList<File>();
+    private ThumbnailAdapter obj_adapter;
+    private File dir;
+    private Uri imgUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,26 +85,97 @@ public class MainActivity extends AppCompatActivity {
         addEvents();
     }
 
-    private void init() {
-        gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
-            //Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
-
-        }else {
-            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
-        }
-        getFile(dir);
-        obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
-        gvThumbnail.setAdapter(obj_adapter);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         init();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && null != data) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+                // Get uri
+                imgUri = result.getUri();
+
+                openLoadImageForm.putExtra("imageUri", imgUri.toString());
+                startActivity(openLoadImageForm);
+            } else if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+                imgUri = data.getData();
+                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
+                openLoadImageForm.putExtra("imageUri", imgUri.toString());
+                startActivity(openLoadImageForm);
+            } else {
+                Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Fail", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void init() {
+        gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Environment.DIRECTORY_PICTURES + "/ScannerApp");
+        } else {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        }
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        getFile(dir);
+        obj_adapter = new ThumbnailAdapter(getApplicationContext(), filelist);
+        gvThumbnail.setAdapter(obj_adapter);
+    }
+
+    private void addControls() {
+        searchView = findViewById(R.id.searchViewFileName);
+        btnSearch = findViewById(R.id.btnSearch);
+        //        Màn hình chụp ảnh
+        btnCamera = findViewById(R.id.btn_Camera);
+
+        // load image from gallery
+        btnLoadImage = findViewById(R.id.btnLoadImage);
+        //btnLoadImage.setVisibility(View.INVISIBLE);
+
+        btnAdd = findViewById(R.id.btnAdd);
+        layoutButtonAdd = findViewById(R.id.layoutButtonAdd);
+
+        gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Environment.DIRECTORY_PICTURES + "/ScannerApp");
+
+        } else {
+            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
+        }
+        getFile(dir);
+        obj_adapter = new ThumbnailAdapter(getApplicationContext(), filelist);
+        gvThumbnail.setAdapter(obj_adapter);
+    }
+
     private void addEvents() {
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (searchView.getVisibility() == View.GONE) {
+                    searchView.setVisibility(View.VISIBLE);
+                } else {
+                    searchView.setVisibility(View.GONE);
+                }
+            }
+        });
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                //xuLyTimKiemFileName();
+            }
+        });
+
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,9 +198,11 @@ public class MainActivity extends AppCompatActivity {
                 if (btnLoadImage.getVisibility() == View.GONE && btnCamera.getVisibility() == View.GONE) {
                     btnLoadImage.setVisibility(View.VISIBLE);
                     btnCamera.setVisibility(View.VISIBLE);
+                    layoutButtonAdd.setOrientation(LinearLayout.HORIZONTAL);
                 } else {
                     btnLoadImage.setVisibility(View.GONE);
                     btnCamera.setVisibility(View.GONE);
+                    layoutButtonAdd.setOrientation(LinearLayout.VERTICAL);
                 }
             }
         });
@@ -142,34 +215,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void xuLyTimKiemFileName() {
+        String namefile = searchView.getQuery().toString();
+        ArrayList<File> list = new ArrayList<>();
+        for (File f : filelist) {
+            String[] temp = f.getPath().split("/");
+            String namePath = temp[temp.length - 1];
+            if (namePath.contains(namefile)) {
+                list.add(f);
+            }
+        }
+        filelist = list;
+        obj_adapter.notifyDataSetChanged();
+    }
+
     private void xuLyChonFileTrenGridView(int position) {
         File f = filelist.get(position);
         Intent intent = new Intent(MainActivity.this, ViewImage.class);
-        intent.putExtra("IMAGE_CHOOSE_ON_GRIDVIEW",f);
+        intent.putExtra("IMAGE_CHOOSE_ON_GRIDVIEW", f);
         startActivity(intent);
-    }
-
-    private void addControls() {
-        //        Màn hình chụp ảnh
-        btnCamera = findViewById(R.id.btn_Camera);
-
-        // load image from gallery
-        btnLoadImage = findViewById(R.id.btnLoadImage);
-        //btnLoadImage.setVisibility(View.INVISIBLE);
-
-        //upload Drive
-        btnAdd = findViewById(R.id.btnAdd);
-
-        gvThumbnail = (GridView) findViewById(R.id.gvThumbnail);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ Environment.DIRECTORY_PICTURES + "/ScannerApp");
-
-        }else {
-            dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp");
-        }
-        getFile(dir);
-        obj_adapter = new ThumbnailAdapter(getApplicationContext(),filelist);
-        gvThumbnail.setAdapter(obj_adapter);
     }
 
     private ArrayList<File> getFile(File dir) {
@@ -198,39 +262,9 @@ public class MainActivity extends AppCompatActivity {
         return filelist;
     }
 
-
     //     open gallery
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
     }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && null != data) {
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
-                // Get uri
-                imgUri = result.getUri();
-
-                openLoadImageForm.putExtra("imageUri", imgUri.toString());
-                startActivity(openLoadImageForm);
-            } else if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
-                imgUri =  data.getData();
-                Intent openLoadImageForm = new Intent(getApplicationContext(), LoadImage.class);
-                openLoadImageForm.putExtra("imageUri", imgUri.toString());
-                startActivity(openLoadImageForm);
-            } else {
-                Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(this, "Fail", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
-
 }

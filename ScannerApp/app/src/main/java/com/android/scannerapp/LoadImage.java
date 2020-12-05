@@ -20,8 +20,11 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,19 +46,24 @@ import static androidx.core.app.ActivityCompat.startActivityForResult;
 public class LoadImage extends Activity {
     private ImageView cropImage, exit;
     private ImageView Save;
-    private ImageView Share;
-    //public String image_name="Document";
-    Uri imageUri;
-    BitmapDrawable bitmapDrawable;
-    Bitmap bitmap;
-
+    private Spinner Share;
+    private String[] listChooseShare = new String[]{"Share with PDF file", "Share with JPEG file"};
+    private ArrayAdapter<String> adapterShare;
+    private Uri imageUri;
+    private BitmapDrawable bitmapDrawable;
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate((savedInstanceState));
         setContentView(R.layout.load_image_layout);
 
-        cropImage = (ImageView) findViewById(R.id.cropImageView);
+        loaded();
+        addControls();
+        addEvents();
+    }
+
+    private void loaded() {
         ActivityCompat.requestPermissions(LoadImage.this,
                 new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -68,58 +76,80 @@ public class LoadImage extends Activity {
                 },
                 1
         );
+    }
 
+
+    private void addControls() {
+        cropImage = findViewById(R.id.cropImageView);
 
         final Intent intent = getIntent();
 
-        if (getIntent().getExtras() != null) {
-            imageUri = Uri.parse(getIntent().getStringExtra("imageUri"));
+        if (intent.getExtras() != null) {
+            imageUri = Uri.parse(intent.getStringExtra("imageUri"));
             cropImage.setImageURI(imageUri);
-
         }
+
         Save = findViewById(R.id.Save);
+        exit = findViewById(R.id.btnExitLoadImage);
+
+        Share = findViewById(R.id.Share);
+        adapterShare = new ArrayAdapter<>(LoadImage.this, android.R.layout.simple_spinner_item, listChooseShare);
+        adapterShare.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        this.Share.setAdapter(adapterShare);
+    }
+
+    private void addEvents() {
         Save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String fileName = System.currentTimeMillis() + "";
                 bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
                 bitmap = bitmapDrawable.getBitmap();
-
+                Thread t = new Thread(new IOPdfDocument(bitmap,fileName+".pdf"));
+                t.start();
                 try {
-                    saveBitmap(bitmap);
+                    saveBitmap(bitmap, fileName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
-                Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
-
+                Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
 
 
-        exit = (ImageView) findViewById(R.id.btnExitLoadImage);
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent openHomePage = new Intent(LoadImage.this, MainActivity.class);
                 startActivity(openHomePage);
+                finish();
             }
         });
 
-        Share = findViewById(R.id.Share);
-        Share.setOnClickListener(new View.OnClickListener() {
+        Share.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                shareActivity();
-                //Toast.makeText(getApplicationContext(), "Share successfully", Toast.LENGTH_SHORT).show();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position==0){
+
+                }else
+                {
+                    shareImageActivity();
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }
 
-    private void saveBitmap(Bitmap bitmap) throws IOException {
-        String fileName = System.currentTimeMillis() + ".jpg";
+    private void saveBitmap(Bitmap bitmap, String fileName) throws IOException {
+        fileName += ".jpg";
         OutputStream outputStream;
         boolean isSaved;
 
@@ -142,12 +172,8 @@ public class LoadImage extends Activity {
             if (file.exists())
                 file.delete();
 
-
             outputStream = new FileOutputStream(file);
-
             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
-
-
         }
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         outputStream.flush();
@@ -170,7 +196,7 @@ public class LoadImage extends Activity {
         return returnedBitmap;
     }
 
-    private void shareActivity() {
+    private void shareImageActivity() {
         bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
         bitmap = bitmapDrawable.getBitmap();
 
@@ -199,8 +225,7 @@ public class LoadImage extends Activity {
             share.putExtra(Intent.EXTRA_STREAM, uri);
             startActivity(Intent.createChooser(share, "share with"));
 
-            //outFile.delete();
-
+            Toast.makeText(getApplicationContext(), "Share successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(LoadImage.this, "Error in sharing.", Toast.LENGTH_SHORT).show();
         }

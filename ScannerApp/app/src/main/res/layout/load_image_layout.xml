@@ -15,15 +15,34 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimaryDark"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/app_name"
+                android:textColor="@color/ic_launcher_scanner_background"
+                android:textSize="20dp"
+                android:textStyle="bold" />
 
+            <EditText
+                android:id="@+id/txtNamePdfFile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="20dp"
+                android:autoText="true"
+                android:hint="Nhập tên file"
+                android:textSize="18sp" />
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView
         android:id="@+id/cropImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="55dp"
         android:layout_gravity="center" />
 
 
@@ -47,22 +66,27 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginRight="20dp"
-                app:srcCompat="@android:drawable/ic_delete" />
+                android:scaleType="fitCenter"
+                android:src="@android:drawable/ic_delete" />
 
             <ImageView
                 android:id="@+id/Save"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginRight="20dp"
                 android:scaleType="fitCenter"
-                android:src="@android:drawable/checkbox_off_background"
-                app:srcCompat="@drawable/ic_baseline_check_24" />
+                android:src="@android:drawable/ic_menu_save"
+                />
 
-            <ImageView
+            <Spinner
                 android:id="@+id/Share"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginLeft="20dp"
-                app:srcCompat="@android:drawable/ic_menu_share" />
+                android:layout_weight="0"
+                android:accessibilityHeading="true"
+                android:background="@android:drawable/ic_menu_share"
+                android:popupBackground="@color/ic_launcher_scanner_background"
+                android:spinnerMode="dialog" />
 
         </LinearLayout>
     </LinearLayout>

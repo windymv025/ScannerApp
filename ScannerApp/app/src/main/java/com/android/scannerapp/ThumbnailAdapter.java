@@ -32,7 +32,7 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
     ViewHolder viewHolder;
 
     public ThumbnailAdapter(Context context, ArrayList<File> al_img) {
-        super(context,R.layout.row_thumbnail,al_img);
+        super(context, R.layout.row_thumbnail, al_img);
         this.context = context;
         this.al_img = al_img;
     }
@@ -56,7 +56,7 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
     @Override
     public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.row_thumbnail,parent,false);
+            view = LayoutInflater.from(getContext()).inflate(R.layout.row_thumbnail, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.txtName = (TextView) view.findViewById(R.id.txtName);
             viewHolder.imgThumb = view.findViewById(R.id.imgThumb);
@@ -64,13 +64,18 @@ public class ThumbnailAdapter extends ArrayAdapter<File> {
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
-        viewHolder.txtName.setText(al_img.get(position).getName());
-        if(al_img.get(position).exists()) {
+        viewHolder.txtName.setText(
+                al_img.get(position).getName().substring(
+                        0,
+                        al_img.get(position).getName().lastIndexOf(".")
+                )
+        );
+        if (al_img.get(position).exists()) {
             Bitmap myBitmap = BitmapFactory.decodeFile(al_img.get(position).getAbsolutePath());
             viewHolder.imgThumb.setImageBitmap(myBitmap);
         }
 
-            return view;
+        return view;
     }
 
     public class ViewHolder {
