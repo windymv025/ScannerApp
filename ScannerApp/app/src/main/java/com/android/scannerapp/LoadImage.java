@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -30,6 +33,7 @@ import com.android.io.IOPdfDocument;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class LoadImage extends Activity {
@@ -38,7 +42,7 @@ public class LoadImage extends Activity {
     private Spinner Share;
     private EditText txtNamePdfFile;
 
-    private String[] listChooseShare = new String[]{"Share with PDF file", "Share with JPEG file"};
+    private String[] listChooseShare = new String[]{"Choose: ","Share with PDF file", "Share with JPEG file"};
     private ArrayAdapter<String> adapterShare;
 
     private Uri imageUri;
@@ -129,14 +133,14 @@ public class LoadImage extends Activity {
         Share.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-
-                } else {
+                if (position == 1) {
+                    sharePdfActivity();
+                }
+                if (position == 2){
                     shareImageActivity();
                 }
 
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -228,6 +232,54 @@ public class LoadImage extends Activity {
             Toast.makeText(LoadImage.this, "Error in sharing.", Toast.LENGTH_SHORT).show();
         }
 
+    }
+    private void sharePdfActivity() {
+
+        bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
+        bitmap = bitmapDrawable.getBitmap();
+//Save pdf------------------------------------------------------------------------------------------
+        PdfDocument pdfDocument = new PdfDocument();
+        PdfDocument.PageInfo pi = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
+        PdfDocument.Page page = pdfDocument.startPage(pi);
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#FFFFFF"));
+        canvas.drawPaint(paint);
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(),bitmap.getHeight(),true);
+        paint.setColor(Color.BLUE);
+        canvas.drawBitmap(bitmap,0,0,null);
+
+        pdfDocument.finishPage(page);
+
+        File root = new File(Environment.getExternalStorageDirectory(),"ScannerApp");
+        if(!root.exists()){root.mkdir();}
+        File file = new File(root,"picture.pdf");
+        try{
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            pdfDocument.writeTo(fileOutputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(LoadImage.this, "Save pdf thanh cong", Toast.LENGTH_LONG).show();
+//--------------------------------------------------------------------------------------------------
+//Make uri -----------------------------------------------------------------------------------------
+
+//        File iconsStoragePath = Environment.getExternalStorageDirectory();
+//        final String selpath = iconsStoragePath.getAbsolutePath() + "/ScannerApp/";
+//
+        Intent intent = new Intent(Intent.ACTION_SEND);
+//        Uri selectedUri = Uri.parse(selpath  + "picture.pdf");
+
+        String filepath = file.toString();
+        Uri selectedUri = Uri.parse(filepath);
+        Toast.makeText(LoadImage.this, selectedUri.toString(), Toast.LENGTH_SHORT).show();
+
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(selectedUri.toString());
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_STREAM, selectedUri);
+        startActivity(Intent.createChooser(intent, "Share File"));
     }
 }
 
