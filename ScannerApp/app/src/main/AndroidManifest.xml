@@ -17,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ViewImage"></activity>
+        <activity android:name=".PdfActivity"></activity>
         <activity android:name=".LoadImage" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
