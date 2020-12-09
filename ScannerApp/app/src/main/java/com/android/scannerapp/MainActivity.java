@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton btnLoadImage;
     private SearchView searchView;
     private FloatingActionButton btnSearch;
+    private Button btnLoadPdf;
 
     private ArrayList<File> filelist = new ArrayList<File>();
     private ThumbnailAdapter obj_adapter;
@@ -182,6 +184,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         gvThumbnail.setOnItemLongClickListener(new ItemLongClickRemove());
+
+        // doc file pdf
+        btnLoadPdf = (Button) findViewById(R.id.btnLoadPdf);
+        btnLoadPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, PdfActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     private void xuLyTimKiemFileName() {

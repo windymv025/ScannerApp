@@ -33,6 +33,12 @@
             android:stretchMode="columnWidth"
             android:verticalSpacing="10dp" />
 
+        <Button
+            android:id="@+id/btnLoadPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOAD PDF" />
+
     </LinearLayout>
 
     <LinearLayout
