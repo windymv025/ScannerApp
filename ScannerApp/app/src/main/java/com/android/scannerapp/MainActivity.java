@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton btnLoadImage;
     private SearchView searchView;
     private FloatingActionButton btnSearch;
+    private FloatingActionButton btnReadPDF;
 
     private ArrayList<File> filelist = new ArrayList<File>();
     private ThumbnailAdapter obj_adapter;
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         getFile(dir);
         obj_adapter = new ThumbnailAdapter(getApplicationContext(), filelist);
         gvThumbnail.setAdapter(obj_adapter);
+        btnReadPDF = findViewById(R.id.btnReadPDF);
     }
 
     private void addEvents() {
