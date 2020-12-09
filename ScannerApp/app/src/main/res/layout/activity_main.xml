@@ -95,13 +95,13 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnReadPDF"
+        android:id="@+id/btnLoadPdfFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|left"
         android:layout_margin="16dp"
         android:backgroundTint="@color/cardview_dark_background"
-        android:text="Load Image"
+        android:text="Load PDF"
         android:visibility="visible"
         app:srcCompat="@drawable/ic_pdf_dark" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
