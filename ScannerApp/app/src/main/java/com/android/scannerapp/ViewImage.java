@@ -36,8 +36,11 @@ public class ViewImage extends AppCompatActivity {
     Spinner spinnerShare;
     ImageView btnDelete;
     ImageView btnBack;
-    String[] listChooseShare = new String[]{"Choose: ","Share with PDF file", "Share with JPEG file"};
+
+    String[] listChooseShare = new String[]{"Choose: ", "Share with PDF file", "Share with JPEG file"};
     ArrayAdapter<String> adapterShare;
+
+    File pdfFile = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,26 @@ public class ViewImage extends AppCompatActivity {
 
         addCotrols();
         addEvents();
+    }
+
+    private void addCotrols() {
+        imageView = findViewById(R.id.imageView);
+        Intent intent = getIntent();
+        File imageFile = (File) intent.getSerializableExtra("IMAGE_CHOOSE_ON_GRIDVIEW");
+        pdfFile = (File) intent.getSerializableExtra("PDF_FILE_CHOOSE");
+        if (imageFile.exists()) {
+            Bitmap myBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            imageView.setImageBitmap(myBitmap);
+        }
+
+        btnBack = findViewById(R.id.btnBack);
+        btnDelete = findViewById(R.id.btnDelete);
+
+        spinnerShare = findViewById(R.id.spinnerShare);
+        adapterShare = new ArrayAdapter<>(ViewImage.this, android.R.layout.simple_spinner_item, listChooseShare);
+        adapterShare.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        this.spinnerShare.setAdapter(adapterShare);
+        //spinnerShare.setSelection(-1);
     }
 
     private void addEvents() {
@@ -84,54 +107,18 @@ public class ViewImage extends AppCompatActivity {
         Bitmap bitmap;
 
         if (position == 1) {// share as pdf
-            bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
-            bitmap = bitmapDrawable.getBitmap();
-//Save pdf------------------------------------------------------------------------------------------
-            PdfDocument pdfDocument = new PdfDocument();
-            PdfDocument.PageInfo pi = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
-            PdfDocument.Page page = pdfDocument.startPage(pi);
-            Canvas canvas = page.getCanvas();
-            Paint paint = new Paint();
-            paint.setColor(Color.parseColor("#FFFFFF"));
-            canvas.drawPaint(paint);
-
-            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(),bitmap.getHeight(),true);
-            paint.setColor(Color.BLUE);
-            canvas.drawBitmap(bitmap,0,0,null);
-
-            pdfDocument.finishPage(page);
-
-            File root = new File(Environment.getExternalStorageDirectory(),"ScannerApp");
-            if(!root.exists()){root.mkdir();}
-            File file = new File(root,"picture.pdf");
-            try{
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                pdfDocument.writeTo(fileOutputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Toast.makeText(ViewImage.this, "Save pdf thanh cong", Toast.LENGTH_LONG).show();
-//--------------------------------------------------------------------------------------------------
-//Make uri -----------------------------------------------------------------------------------------
-
-//        File iconsStoragePath = Environment.getExternalStorageDirectory();
-//        final String selpath = iconsStoragePath.getAbsolutePath() + "/ScannerApp/";
-//
             Intent intent = new Intent(Intent.ACTION_SEND);
-//        Uri selectedUri = Uri.parse(selpath  + "picture.pdf");
 
-            String filepath = file.toString();
+            String filepath = pdfFile.toString();
             Uri selectedUri = Uri.parse(filepath);
-            Toast.makeText(ViewImage.this, selectedUri.toString(), Toast.LENGTH_LONG).show();
 
             String fileExtension = MimeTypeMap.getFileExtensionFromUrl(selectedUri.toString());
             String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
             intent.setType(mimeType);
             intent.putExtra(Intent.EXTRA_STREAM, selectedUri);
             startActivity(Intent.createChooser(intent, "Share File"));
-
         }
-        if(position==2) { // share as image
+        if (position == 2) { // share as image
             bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
             bitmap = bitmapDrawable.getBitmap();
 
@@ -172,7 +159,7 @@ public class ViewImage extends AppCompatActivity {
         alertDialogBuilder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent deleteIntent = new Intent(ViewImage.this,MainActivity.class);
+                Intent deleteIntent = new Intent(ViewImage.this, MainActivity.class);
                 Intent intent = getIntent();
                 File imageFile = (File) intent.getSerializableExtra("IMAGE_CHOOSE_ON_GRIDVIEW");
                 File f = new File(imageFile.getPath());
@@ -188,23 +175,5 @@ public class ViewImage extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
-    private void addCotrols() {
-        imageView = findViewById(R.id.imageView);
-        Intent intent = getIntent();
-        File imageFile = (File) intent.getSerializableExtra("IMAGE_CHOOSE_ON_GRIDVIEW");
-        if(imageFile.exists()) {
-            Bitmap myBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            imageView.setImageBitmap(myBitmap);
-        }
-
-        btnBack= findViewById(R.id.btnBack);
-        btnDelete = findViewById(R.id.btnDelete);
-
-        spinnerShare = findViewById(R.id.spinnerShare);
-        adapterShare = new ArrayAdapter<>(ViewImage.this, android.R.layout.simple_spinner_item, listChooseShare);
-        adapterShare.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        this.spinnerShare.setAdapter(adapterShare);
-        spinnerShare.setSelection(-1);
-    }
 
 }
