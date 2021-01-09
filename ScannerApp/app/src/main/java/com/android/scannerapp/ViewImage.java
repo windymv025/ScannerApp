@@ -8,12 +8,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -21,6 +26,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class ViewImage extends AppCompatActivity {
@@ -29,7 +36,7 @@ public class ViewImage extends AppCompatActivity {
     Spinner spinnerShare;
     ImageView btnDelete;
     ImageView btnBack;
-    String[] listChooseShare = new String[]{"Share with PDF file", "Share with JPEG file"};
+    String[] listChooseShare = new String[]{"Choose: ","Share with PDF file", "Share with JPEG file"};
     ArrayAdapter<String> adapterShare;
 
     @Override
@@ -76,9 +83,55 @@ public class ViewImage extends AppCompatActivity {
         BitmapDrawable bitmapDrawable;
         Bitmap bitmap;
 
-        if (position == 0) {
+        if (position == 1) {// share as pdf
+            bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+            bitmap = bitmapDrawable.getBitmap();
+//Save pdf------------------------------------------------------------------------------------------
+            PdfDocument pdfDocument = new PdfDocument();
+            PdfDocument.PageInfo pi = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
+            PdfDocument.Page page = pdfDocument.startPage(pi);
+            Canvas canvas = page.getCanvas();
+            Paint paint = new Paint();
+            paint.setColor(Color.parseColor("#FFFFFF"));
+            canvas.drawPaint(paint);
 
-        } else {
+            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(),bitmap.getHeight(),true);
+            paint.setColor(Color.BLUE);
+            canvas.drawBitmap(bitmap,0,0,null);
+
+            pdfDocument.finishPage(page);
+
+            File root = new File(Environment.getExternalStorageDirectory(),"ScannerApp");
+            if(!root.exists()){root.mkdir();}
+            File file = new File(root,"picture.pdf");
+            try{
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                pdfDocument.writeTo(fileOutputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(ViewImage.this, "Save pdf thanh cong", Toast.LENGTH_LONG).show();
+//--------------------------------------------------------------------------------------------------
+//Make uri -----------------------------------------------------------------------------------------
+
+//        File iconsStoragePath = Environment.getExternalStorageDirectory();
+//        final String selpath = iconsStoragePath.getAbsolutePath() + "/ScannerApp/";
+//
+            Intent intent = new Intent(Intent.ACTION_SEND);
+//        Uri selectedUri = Uri.parse(selpath  + "picture.pdf");
+
+            String filepath = file.toString();
+            Uri selectedUri = Uri.parse(filepath);
+            Toast.makeText(ViewImage.this, selectedUri.toString(), Toast.LENGTH_LONG).show();
+
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(selectedUri.toString());
+            String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+            intent.setType(mimeType);
+            intent.putExtra(Intent.EXTRA_STREAM, selectedUri);
+            startActivity(Intent.createChooser(intent, "Share File"));
+
+        }
+        if(position==2) { // share as image
             bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
             bitmap = bitmapDrawable.getBitmap();
 
@@ -153,4 +206,5 @@ public class ViewImage extends AppCompatActivity {
         this.spinnerShare.setAdapter(adapterShare);
         spinnerShare.setSelection(-1);
     }
+
 }

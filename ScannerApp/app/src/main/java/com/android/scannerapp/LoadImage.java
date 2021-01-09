@@ -225,9 +225,9 @@ public class LoadImage extends Activity {
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("image/jpeg");
             share.putExtra(Intent.EXTRA_STREAM, uri);
-            startActivity(Intent.createChooser(share, "share with"));
+            startActivity(Intent.createChooser(share, "Share with"));
 
-            Toast.makeText(getApplicationContext(), "Share successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Share as image", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(LoadImage.this, "Error in sharing.", Toast.LENGTH_SHORT).show();
         }
@@ -273,7 +273,7 @@ public class LoadImage extends Activity {
 
         String filepath = file.toString();
         Uri selectedUri = Uri.parse(filepath);
-        Toast.makeText(LoadImage.this, selectedUri.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(LoadImage.this, selectedUri.toString(), Toast.LENGTH_LONG).show();
 
         String fileExtension = MimeTypeMap.getFileExtensionFromUrl(selectedUri.toString());
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
