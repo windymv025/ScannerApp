@@ -31,7 +31,7 @@ public class IOPdfDocument implements Runnable {
             pdfFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp/" + filePDFname);
         }
 
-        if (pdfFile.exists()) {
+        if (!pdfFile.exists()) {
             pdfFile.mkdirs();
         }
 
@@ -56,6 +56,18 @@ public class IOPdfDocument implements Runnable {
         WIDTH_PAGE = bitmap.getWidth();
         HEIGHT_PAGE = bitmap.getHeight();
         scanledbmp = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false);
+    }
+
+    public static File getFilePDFInGridView(String fileName) {
+        fileName += ".pdf";
+        File pdfFile;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            pdfFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Environment.DIRECTORY_DOCUMENTS + "/ScannerApp/" + fileName);
+
+        } else {
+            pdfFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ScannerApp/" + fileName);
+        }
+        return pdfFile;
     }
 
     private void setup() {

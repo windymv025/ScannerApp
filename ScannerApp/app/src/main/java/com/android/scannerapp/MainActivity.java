@@ -19,6 +19,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.android.adapter.ThumbnailAdapter;
+import com.android.io.IOPdfDocument;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 openLoadImageForm.putExtra("imageUri", imgUri.toString());
                 startActivity(openLoadImageForm);
             } else {
-                Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "No. ", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
@@ -212,8 +213,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void xuLyChonFileTrenGridView(int position) {
         File f = filelist.get(position);
+        File pdfFile = IOPdfDocument.getFilePDFInGridView(f.getName().substring(0,f.getName().lastIndexOf('.')));
         Intent intent = new Intent(MainActivity.this, ViewImage.class);
         intent.putExtra("IMAGE_CHOOSE_ON_GRIDVIEW", f);
+        intent.putExtra("PDF_FILE_CHOOSE", pdfFile);
         startActivity(intent);
     }
 

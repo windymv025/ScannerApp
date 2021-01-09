@@ -235,29 +235,29 @@ public class LoadImage extends Activity {
     }
     private void sharePdfActivity() {
 
-        bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
-        bitmap = bitmapDrawable.getBitmap();
+        //bitmapDrawable = (BitmapDrawable) cropImage.getDrawable();
+        //bitmap = bitmapDrawable.getBitmap();
 //Save pdf------------------------------------------------------------------------------------------
-        PdfDocument pdfDocument = new PdfDocument();
-        PdfDocument.PageInfo pi = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
-        PdfDocument.Page page = pdfDocument.startPage(pi);
-        Canvas canvas = page.getCanvas();
-        Paint paint = new Paint();
-        paint.setColor(Color.parseColor("#FFFFFF"));
-        canvas.drawPaint(paint);
+//        PdfDocument pdfDocument = new PdfDocument();
+//        PdfDocument.PageInfo pi = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(),1).create();
+//        PdfDocument.Page page = pdfDocument.startPage(pi);
+//        Canvas canvas = page.getCanvas();
+//        Paint paint = new Paint();
+//        paint.setColor(Color.parseColor("#FFFFFF"));
+//        canvas.drawPaint(paint);
 
-        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(),bitmap.getHeight(),true);
-        paint.setColor(Color.BLUE);
-        canvas.drawBitmap(bitmap,0,0,null);
+        //bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(),bitmap.getHeight(),true);
+        //paint.setColor(Color.BLUE);
+        //canvas.drawBitmap(bitmap,0,0,null);
 
-        pdfDocument.finishPage(page);
+        //pdfDocument.finishPage(page);
 
         File root = new File(Environment.getExternalStorageDirectory(),"ScannerApp");
         if(!root.exists()){root.mkdir();}
         File file = new File(root,"picture.pdf");
         try{
             FileOutputStream fileOutputStream = new FileOutputStream(file);
-            pdfDocument.writeTo(fileOutputStream);
+            //pdfDocument.writeTo(fileOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
