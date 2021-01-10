@@ -35,18 +35,7 @@ public class PdfActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-//        super.onActivityResult(requestCode, resultCode, resultData);
-//        if(requestCode == CHOOSE_PDF_FROM_FILE && resultCode == RESULT_OK) {
-//            if(resultData != null) {
-//                String path = resultData.getData().getPath();
-//                Log.i("TEST", path);
-//                file = new File(path);
-//
-////                pdfView.fromFile(file).load();
-//                pdfView.fromAsset("pdf_book.pdf").load();
-//
-//            }
-//        }
+        super.onActivityResult(requestCode, resultCode, resultData);
 
         switch(requestCode) {
             case CHOOSE_PDF_FROM_FILE:
@@ -55,7 +44,8 @@ public class PdfActivity extends AppCompatActivity {
                     Log.i("TEST", path);
                     file = new File(path);
 
-                    pdfView.fromFile(file).load();
+//                    pdfView.fromFile(file).load();
+                    pdfView.fromAsset("pdf_book.pdf").load();
                 }
                 break;
         }
